@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <title>Ciências Aplicadas</title>
+    <meta name="robots" content="index,follow">
+    <meta name="viewport" content="initial-scale=1.0 maximum-scale=1.0 user-scalable=no">
+
+    <!-- stylesheets::vendor -->
+    <%= params[:debug].present? ? stylesheet_link_tag("/assets/vendor/theme/css/bootstrap.min.css") :
+        wicked_pdf_stylesheet_link_tag("/assets/vendor/theme/css/bootstrap.min.css") -%>
+
+    <!-- plugins -->
+    <%= params[:debug].present? ? stylesheet_link_tag("/assets/vendor/theme/css/style.css") :
+        wicked_pdf_stylesheet_link_tag("/assets/vendor/theme/css/style.css") -%>
+
+    <!-- stylesheets::main -->
+    <%= params[:debug].present? ? stylesheet_link_tag("/assets/styles/main.css") :
+        wicked_pdf_stylesheet_link_tag("/assets/styles/main.css") -%>
+
+    <!-- script::jquery -->
+    <%= params[:debug].present? ?
+        javascript_include_tag("/assets/vendor/theme/js/jquery-2.1.1.js") :
+        wicked_pdf_javascript_include_tag("/assets/vendor/theme/js/jquery-2.1.1.js") -%>
+    <%= params[:debug].present? ?
+        javascript_include_tag("/assets/vendor/theme/js/plugins/chartJs/Chart.min.js") :
+        wicked_pdf_javascript_include_tag("/assets/vendor/theme/js/plugins/chartJs/Chart.min.js") -%>
+    <%= params[:debug].present? ?
+        javascript_include_tag("/assets/vendor/theme/js/plugins/peity/jquery.peity.min.js") :
+        wicked_pdf_javascript_include_tag("/assets/vendor/theme/js/plugins/peity/jquery.peity.min.js") -%>
+
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+
+</head>
+<body id="pdf">
+    <div class="pdf__header-wrapper">
+        <%= params[:debug].present? ?
+            image_tag("/assets/images/report.png") :
+            wicked_pdf_image_tag("/assets/images/report.png") -%>
+        <div class="pdf__header-table-wrapper">
+            <header class="pdf__header">
+                <h1 class="pdf__header-heading">
+                    <strong><%= @report_name %></strong>
+                </h1>
+            </header>
+        </div>
+    </div>
+    <%= yield %>
+</body>
+</html>

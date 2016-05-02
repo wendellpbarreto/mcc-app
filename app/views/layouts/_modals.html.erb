@@ -1,0 +1,555 @@
+<% if can? :index, Exam %>
+<!-- exam's modals -->
+<div class="modal inmodal fade" id="exam-general-report-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Imprimir Relatório Geral da Prova</h4>
+                <small class="font-bold">Escolha a prova e a área de conhecimento para ordenação.</small>
+            </div>
+            <form role="form" method="get" action="<%= show_exams_path %>.pdf" target="_blank">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="" class="col-sm-3 control-label m-t-xs">Simulado</label>
+                        <div class="col-sm-9 input-group">
+                            <select name="id" id="exam_id" class="chosen-select">
+                                <% @exams.each do |exam| %>
+                                    <option value="<%= exam.id %>"><%= exam.name %></option>
+                                <% end %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-print"></i> Imprimir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal fade" id="exam-statistic-report-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Imprimir Relatório Estatístico da Prova</h4>
+                <small class="font-bold">
+                    Escolha a prova ou a opção acumulado para o acumulado de todos os simulados.
+                    <br>
+                    Selecione também as turmas das quais quer o resultado (nenhuma turma selecionada irá gerar o de todas as turmas).
+                </small>
+            </div>
+            <form role="form" method="get" action="<%= show_statistic_report_exams_path %>">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-7">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label for="" class="col-sm-4 control-label m-t-sm">Simulado</label>
+                                    <div class="col-sm-8 input-group">
+                                        <select name="id" id="exam_id" class="chosen-select">
+                                            <option value="">Selecione</option>
+                                            <% @exams.each do |exam| %>
+                                                <option value="<%= exam.id %>"><%= exam.name %></option>
+                                            <% end %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-1 m-t-xs">
+                            <strong>ou</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group m-t-xs">
+                                <input id="acumulated" class="checkbox-input" type="checkbox" name="acumulated" value="true">
+                                <label for="acumulated" class="checkbox-label"><strong> Acumulado</strong></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed m-t-xs"></div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group check-all-container">
+                                <label for="" class="col-sm-2 control-label">Turmas</label>
+                                <div class="col-sm-3">
+                                    <% @grades.each_with_index do |grade, index| %>
+                                        <%= check_box_tag :grade_ids, grade.id, (params[:grades] && params[:grades].include?(grade.id.to_s)),
+                                        id: "grade_ids_#{grade.id}__master_e",  :name => 'grades[]', class: "checkbox-input" %>
+
+                                        <%= label_tag "grade_ids_#{grade.id}__master_e", grade.name, class: "checkbox-label" %>
+                                        <br>
+                                        <% if (index + 1) % 4 == 0 and index != 0 %>
+                                            </div>
+                                            <div class="col-sm-3">
+                                        <% end %>
+                                    <% end %>
+                                    <input id="check-all__master_e" class="checkbox-input check-all-input" type="checkbox" name="check-all" value="true">
+                                    <label for="check-all__master_e" class="checkbox-label check-all-label">Todos</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-print"></i> Imprimir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal fade" id="exam-answer-cards-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Imprimir Cartões-Resposta da Prova</h4>
+                <small class="font-bold">Escolha a prova do qual deseja efetuar o download dos cartões-reposta.</small>
+            </div>
+            <form role="form" method="get" action="<%= show_answer_cards_exams_path %>.pdf">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group m-l-xl">
+                            <select name="id" id="exam_id" class="chosen-select">
+                                <% @exams.each do |exam| %>
+                                    <option value="<%= exam.id %>"><%= exam.name %></option>
+                                <% end %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-print"></i> Imprimir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal fade" id="exam-subjects-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Imprimir Resultado por Disciplina</h4>
+                <small class="font-bold"></small>
+            </div>
+            <form role="form" method="get" action="<%= subjects_scores_exams_path(format: :xls) %>">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group m-l-xl">
+                            <select name="id" id="exam_id" class="chosen-select">
+                                <% @exams.where.not(processed_at: nil).each do |exam| %>
+                                    <% if exam.subjects.size >0 %>
+                                        <option value="<%= exam.id %>"><%= exam.name %></option>
+                                    <% end %>
+                                <% end %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-print"></i> Imprimir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<% end %>
+
+<% if can? :index, SimulatedTest %>
+<!-- simulated test's modals -->
+<div class="modal inmodal fade" id="subjects-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Imprimir Resultado por Disciplina</h4>
+                <small class="font-bold"></small>
+            </div>
+            <form role="form" method="get" action="<%= subjects_scores_simulated_tests_path(format: :xls) %>">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group m-l-xl">
+                            <select name="id" id="simulated_test_id" class="chosen-select">
+                                <% @simulated_tests.where.not(processed_at: nil).each do |simulated_test| %>
+                                    <% if simulated_test.subjects.size >0 %>
+                                        <option value="<%= simulated_test.id %>"><%= simulated_test.name %></option>
+                                    <% end %>
+                                <% end %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-print"></i> Imprimir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal fade" id="answers-key-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Imprimir Gabarito</h4>
+                <small class="font-bold">Escolha o simulado do qual quer gerar o gabarito para impressão.</small>
+            </div>
+            <form role="form">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 b-r">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <%= select '', '', @simulated_tests.map{|c| [c.name, c.id]}, { prompt: 'Selecione o simulado' }, { class: "chosen-select" }  %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary"><i class="fa fa-print"></i> Imprimir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal fade" id="answer-cards-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Imprimir Cartões-Resposta</h4>
+                <small class="font-bold">Escolha o simulado do qual deseja efetuar o download dos cartões-reposta.</small>
+            </div>
+            <form role="form" method="get" action="<%= show_answer_cards_simulated_tests_path %>.pdf">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group m-l-xl">
+                            <select name="id" id="simulated_test_id" class="chosen-select">
+                                <% @simulated_tests.each do |simulated_test| %>
+                                    <option value="<%= simulated_test.id %>"><%= simulated_test.name %></option>
+                                <% end %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary" name="day" value="1"><i class="fa fa-print"></i> 1º Dia</button>
+                    <button type="submit" class="btn btn-primary" name="day" value="2"><i class="fa fa-print"></i> 2º Dia</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal fade" id="general-report-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Imprimir Relatório Geral do Simulado</h4>
+                <small class="font-bold">Escolha o simulado e a área de conhecimento para ordenação.</small>
+            </div>
+            <form role="form" method="get" action="<%= show_simulated_tests_path %>.pdf" target="_blank">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="" class="col-sm-3 control-label m-t-xs">Simulado</label>
+                        <div class="col-sm-9 input-group">
+                            <select name="id" id="simulated_test_id" class="chosen-select">
+                                <% @simulated_tests.each do |simulated_test| %>
+                                    <option value="<%= simulated_test.id %>"><%= simulated_test.name %></option>
+                                <% end %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group m-t-md">
+                        <label for="" class="col-sm-3 control-label">Ordenar por</label>
+                        <div class="col-sm-9 input-group">
+                            <div class="m-b-sm">
+                                <input type="radio" id="knowledge_area_general"  class="radiobutton-input" name="order_by" value="general" checked="checked">
+                                <label for="knowledge_area_general" class="radiobutton-label">Geral</label>
+                            </div>
+                            <% @knowledge_areas.each do |knowledge_area| %>
+                                <div class="m-b-sm">
+                                    <input type="radio" id="knowledge_area_<%= knowledge_area.id %>__master"  class="radiobutton-input" name="order_by" value="<%= knowledge_area.id %>">
+                                    <label for="knowledge_area_<%= knowledge_area.id %>__master" class="radiobutton-label"><%= knowledge_area.name %></label>
+                                </div>
+                            <% end %>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-print"></i> Imprimir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal fade" id="statistic-report-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Imprimir Relatório Estatístico do Simulado</h4>
+                <small class="font-bold">
+                    Escolha o simulado ou a opção acumulado para o acumulado de todos os simulados.
+                    <br>
+                    Selecione também as turmas das quais quer o resultado (nenhuma turma selecionada irá gerar o de todas as turmas).
+                </small>
+            </div>
+            <form role="form" method="get" action="<%= show_statistic_report_simulated_tests_path %>">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-7">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label for="" class="col-sm-4 control-label m-t-sm">Simulado</label>
+                                    <div class="col-sm-8 input-group">
+                                        <select name="id" id="simulated_test_id" class="chosen-select">
+                                                <option value="">Selecione</option>
+                                            <% @simulated_tests.each do |simulated_test| %>
+                                                <option value="<%= simulated_test.id %>"><%= simulated_test.name %></option>
+                                            <% end %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-1 m-t-xs">
+                            <strong>ou</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group m-t-xs">
+                                <input id="acumulated" class="checkbox-input" type="checkbox" name="acumulated" value="true">
+                                <label for="acumulated" class="checkbox-label"><strong> Acumulado</strong></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed m-t-xs"></div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group check-all-container">
+                                <label for="" class="col-sm-2 control-label">Turmas</label>
+                                <div class="col-sm-3">
+                                    <% @grades.each_with_index do |grade, index| %>
+                                        <%= check_box_tag :grade_ids, grade.id, (params[:grades] && params[:grades].include?(grade.id.to_s)),
+                                        id: "grade_ids_#{grade.id}__master_st",  :name => 'grades[]', class: "checkbox-input" %>
+
+                                        <%= label_tag "grade_ids_#{grade.id}__master_st", grade.name, class: "checkbox-label" %>
+                                        <br>
+                                        <% if (index + 1) % 4 == 0 and index != 0 %>
+                                            </div>
+                                            <div class="col-sm-3">
+                                        <% end %>
+                                    <% end %>
+                                    <input id="check-all__master_st" class="checkbox-input check-all-input" type="checkbox" name="check-all" value="true">
+                                    <label for="check-all__master_st" class="checkbox-label check-all-label">Todos</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-print"></i> Imprimir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<% end %>
+
+<div class="modal inmodal fade" id="delete-simulated-tests-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title text-danger">Excluir Simulado</h4>
+                <small class="font-bold">Use das instruções abaixo para excluir um simulado do sistema.</small>
+            </div>
+            <form role="form" method="post" action="<%= destroy_simulated_tests_path(logged_user: current_user.email) %>" autocomplete="off">
+                <input name="_method" type="hidden" value="delete" />
+                <%= token_tag %>
+                <div class="modal-body">
+                    <p>
+                        <strong>LEIA COM ATENÇÃO!</strong> Você está prestes a excluir um simulado. Após isso, as informações sobre o simulado serão apagadas assim como as estatísticas do mesmo dentro do sistmea. Escolha o simulado a ser excluído no campo abaixo e digite o nome do mesmo no último campo.</p>
+                    <div class="form-group">
+                        <label>Simulado</label>
+                        <div class="">
+                            <select name="id" id="simulated_test_id" class="chosen-select">
+                                <% @simulated_tests.each do |simulated_test| %>
+                                    <option value="<%= simulated_test.id %>"><%= simulated_test.name %></option>
+                                <% end %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do simulado</label>
+                        <input type="text" name="name" autocomplete="off"  placeholder="Digite o nome do simulado" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-warning"><i class="fa fa-warning"></i> Excluir Simulado</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal fade" id="delete-exams-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title text-danger">Excluir Prova</h4>
+                <small class="font-bold">Use das instruções abaixo para excluir uma prova do sistema.</small>
+            </div>
+            <form role="form" method="post" action="<%= destroy_exams_path(logged_user: current_user.email) %>" autocomplete="off">
+                <input name="_method" type="hidden" value="delete" />
+                <%= token_tag %>
+                <div class="modal-body">
+                    <p>
+                        <strong>LEIA COM ATENÇÃO!</strong> Você está prestes a excluir uma prova. Após isso, as informações sobre a prova serão apagadas assim como as estatísticas da mesma dentro do sistmea. Escolha a prova a ser excluída no campo abaixo e digite o nome da mesma no último campo.</p>
+                    <div class="form-group">
+                        <label>Prova</label>
+                        <div class="">
+                            <select name="id" id="simulated_test_id" class="chosen-select">
+                                <% @exams.each do |exam| %>
+                                    <option value="<%= exam.id %>"><%= exam.name %></option>
+                                <% end %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome da prova</label>
+                        <input type="text" name="name" autocomplete="off"  placeholder="Digite o nome da prova" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-warning"><i class="fa fa-warning"></i> Excluir Prova</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal fade" id="delete-users-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title text-danger">Excluir Estudante</h4>
+                <small class="font-bold">Use das instruções abaixo para excluir um estudante do sistema.</small>
+            </div>
+            <form role="form" method="post" action="<%= destroy_students_path(logged_user: current_user.email) %>" autocomplete="off">
+                <input name="_method" type="hidden" value="delete" />
+                <%= token_tag %>
+                <div class="modal-body">
+                    <p>
+                        <strong>LEIA COM ATENÇÃO!</strong> Você está prestes a excluir um estudante. Após isso, todas as informações e estatísticas dele serão apagadas do sistema. Escolha o estudante a ser excluído no campo abaixo e digite o nome do mesmo no último campo.</p>
+                    <div class="form-group">
+                        <label>Estudante</label>
+                        <div class="">
+                            <select name="id" id="simulated_test_id" class="chosen-select">
+                                <% @students.each do |student| %>
+                                    <option value="<%= student.id %>"><%= student.name %> (CPF: 08665772464)</option>
+                                <% end %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do estudante</label>
+                        <input type="text" name="name" autocomplete="off"  placeholder="Digite o nome do estudante" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-warning"><i class="fa fa-warning"></i> Excluir Estudante</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal fade" id="reset-system-modal__master" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title text-danger">Resetar Sistema</h4>
+                <small class="font-bold">Use das instruções abaixo para executar o resete do sistema.</small>
+            </div>
+            <form role="form" method="post" action="<%= admin_reset_system_path(logged_user: current_user.email) %>" autocomplete="off" onsubmit="return confirm('Você tem CERTEZA que deseja RESETAR O SISTEMA?')">
+                <input name="_method" type="hidden" value="patch" />
+                <%= token_tag %>
+                <div class="modal-body">
+                    <p>
+                        <strong>LEIA COM ATENÇÃO!</strong> Você está prestes a resetar as configurações do sistema. Após isto, todo e qualquer simulado e estudante será completamente excluído, assim como todas as estatísticas e relatórios já processados não mais existirão. Digite a frase de confirmação <code>resetar sistema</code> no campo logo abaixo e, no último, sua senha para confirmar.</p>
+                    <div class="form-group">
+                        <label>Frase de confirmação</label>
+                        <input type="text" name="confirmation_phrase" autocomplete="off"  placeholder="Digite a frase de confirmação" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" name="password" autocomplete="off"  placeholder="Digite sua senha" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-warning"><i class="fa fa-warning"></i> Resetar Sistema</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
